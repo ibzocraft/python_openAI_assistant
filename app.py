@@ -6,6 +6,8 @@ import speech_recognition
 import pyttsx3
 import pyaudio
 
+#Whisper dependencies: pip install -U openai-whisper
+
 #Recognizer
 recognizer = speech_recognition.Recognizer()
 
@@ -19,17 +21,19 @@ def SpeakText(text):
     
     
 #Infinite loop to analyse speech
-while(1):
-    
+#while(1):
+def main():   
     #Exeption handling in case of Request or Unknown Error
     try:
         
         #Use microphone as input (audio source instance)
         with speech_recognition.Microphone(device_index=1) as mic:
             
-            #Adjust the threshold according to the ambient noise level for a better listening
-            print('Adjusting Threshold')
-            recognizer.pause_threshold = 1      
+            #Setting a pause threshold
+            recognizer.pause_threshold = 1
+            
+            #Adjust the energy threshold according to the ambient noise level for a better listening
+            print('Adjusting energy Threshold...')      
             recognizer.adjust_for_ambient_noise(source=mic, duration=2)
             print('Done')
             
@@ -38,9 +42,10 @@ while(1):
             speech_audio = recognizer.listen(source=mic, timeout=30)
             print('Done')
             
-            #Use google to recognize audio and translate it to Text
-            print('Using Google Recognition')
-            speech_text: str = recognizer.recognize_google_cloud(audio_data=speech_audio, credentials_json='')
+            #Use api to recognize audio and translate it to Text
+            #Whisper is really slow i think it's a local rec, because of the packages i had to install
+            print('Using Whisper Recognition...')
+            speech_text: str = recognizer.recognize_whisper(audio_data=speech_audio, model="base")
             speech_text = speech_text.lower()
             print('Done')
             
@@ -56,6 +61,6 @@ while(1):
         print('User Didnt Speak')
     except KeyboardInterrupt:
         print('Program Terminated')
-        break
+        #break
     
-            
+main()
